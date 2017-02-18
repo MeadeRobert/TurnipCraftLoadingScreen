@@ -68,20 +68,19 @@ if (isset($_GET['steamid'])) {
 }
 
 function update_user_data($user_data_file, $current_user, $authors) {
+    global $user_data_file, $current_user, $authors;
     
     $user_data_json = json_decode(file_get_contents($user_data_file), true);
    
     // update song selection for current user
     $existing_user = false;
     foreach ($user_data_json as &$user) {
-        echo var_dump($user);
         if ($user['steamid'] === $current_user->steamid) {
             $user["song_number"] = $user["song_number"] % count($authors) + 1;
             $current_user->song_number = $user["song_number"];
             $existing_user = true;
         }
     }
-    echo var_dump($current_user);
 
     // add new user if user not in database
     if(!$existing_user) {
@@ -95,11 +94,10 @@ function update_user_data($user_data_file, $current_user, $authors) {
     fclose($user_data);
 }
 
-// load from stored data or create new json entry
-if(file_exists($user_data_file)) {
-    update_user_data($user_data_file, $current_user, $authors);
+// update user data or create new json file
+if (file_exists($user_data_file)) {
+    update_user_data();
 } else {
-    // create new json file for current user
     $user_data = fopen($user_data_file,"w");
     fwrite($user_data, json_encode($current_user));
     fclose($user_data);
@@ -107,7 +105,7 @@ if(file_exists($user_data_file)) {
 
 // ============================================================================?>
 <!DOCTYPE html>
-<html class="no-js">
+<html>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -122,15 +120,14 @@ if(file_exists($user_data_file)) {
     <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 </head>
 <body>
-    <audio autoplay id="player">
-        <source src="music/<?php echo $current_user->song_number?>.ogg" type="audio/ogg"></source>
-    </audio>
-    <script>
-    var audio = document.getElementById("player");
-    audio.addEventListener("ended", function() {
-        audio.src = "music/1.ogg";
+    <script type="text/javascript">
+        
+        var song_number = <?php echo json_encode($current_user->song_number); ?>;
+        var audio = new Audio("music/" + song_number + ".ogg");
         audio.play();
-    });
+        audio.addEventListener("ended", function() {
+            location.reload();    
+        });
     </script>
     <div class="container">
         <div class="jumbotron" style="margin-top: 50px;">
@@ -141,16 +138,16 @@ if(file_exists($user_data_file)) {
             </div>
             <h1 id="title" class="bigEntrance" style="font-size: 50px;">Turnipcraft</h1>
 	    <p class="lead">
-                Welcome to our TTT-Server. Have fun!<br>
+                Welcome to Our TTT-Server. Have Fun!<br>
                 <small>
                     <ul style="line-height: 1.6;">
                         <li>Be friendly.</li>
-                        <li>No Random Killing; However, Traitors Can Gift Innocents Weapons on Community Pool Revamped to Join Their Force.</li>
+                        <li>No Random Killing; However, Traitors May Gift Innocents Weapons on Community Pool Revamped to Join Their Force.</li>
                         <li>No Ghosting!</li>
                         <li>Only English (Taylor) or American Allowed.</li>
                         <li> Server Management Team: techdude154, R. </li>
                     </ul>
-                    All used Workshop items can be found here:
+                    All Used Workshop Items Can Be Found Here:
                     <br>
                     <code><a href="http://steamcommunity.com/sharedfiles/filedetails/?id=469332812">
 		    	     http://steamcommunity.com/sharedfiles/filedetails/?id=469332812</a>
