@@ -14,7 +14,7 @@ class User implements JsonSerializable {
     }
 
     public function jsonSerialize() {
-        return [['steamid' => $this->steamid, 'song_number' => $this->song_number]];
+        return ['steamid' => $this->steamid, 'song_number' => $this->song_number];
     }
 }
 
@@ -71,11 +71,11 @@ function update_user_data($user_data_file, $current_user, $authors) {
     global $user_data_file, $current_user, $authors;
     
     $user_data_json = json_decode(file_get_contents($user_data_file), true);
-   
+    
     // update song selection for current user
     $existing_user = false;
     foreach ($user_data_json as &$user) {
-        if ($user['steamid'] === $current_user->steamid) {
+        if ($user['steamid'] == $current_user->steamid) {
             $user["song_number"] = $user["song_number"] % count($authors) + 1;
             $current_user->song_number = $user["song_number"];
             $existing_user = true;
@@ -84,7 +84,6 @@ function update_user_data($user_data_file, $current_user, $authors) {
 
     // add new user if user not in database
     if(!$existing_user) {
-        echo "adding new user";
         array_push($user_data_json, $current_user);
     }
 
@@ -98,12 +97,15 @@ function update_user_data($user_data_file, $current_user, $authors) {
 if (file_exists($user_data_file)) {
     update_user_data();
 } else {
+    $user_data_json = array();
+    array_push($user_data_json, $current_user);
     $user_data = fopen($user_data_file,"w");
-    fwrite($user_data, json_encode($current_user));
+    fwrite($user_data, json_encode($user_data_json));
     fclose($user_data);
 }
+// ============================================================================
+?>
 
-// ============================================================================?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -121,7 +123,6 @@ if (file_exists($user_data_file)) {
 </head>
 <body>
     <script type="text/javascript">
-        
         var song_number = <?php echo json_encode($current_user->song_number); ?>;
         var audio = new Audio("music/" + song_number + ".ogg");
         audio.play();
@@ -137,7 +138,7 @@ if (file_exists($user_data_file)) {
                 }?>
             </div>
             <h1 id="title" class="bigEntrance" style="font-size: 50px;">Turnipcraft</h1>
-	    <p class="lead">
+	        <p class="lead">
                 Welcome to Our TTT-Server. Have Fun!<br>
                 <small>
                     <ul style="line-height: 1.6;">
@@ -145,16 +146,15 @@ if (file_exists($user_data_file)) {
                         <li>No Random Killing; However, Traitors May Gift Innocents Weapons on Community Pool Revamped to Join Their Force.</li>
                         <li>No Ghosting!</li>
                         <li>Only English (Taylor) or American Allowed.</li>
-                        <li> Server Management Team: techdude154, R. </li>
+                        <li>Server Management Team: techdude154, R.</li>
                     </ul>
-                    All Used Workshop Items Can Be Found Here:
+                    All Used Workshop Items Can be Found Here:
                     <br>
                     <code><a href="http://steamcommunity.com/sharedfiles/filedetails/?id=469332812">
 		    	     http://steamcommunity.com/sharedfiles/filedetails/?id=469332812</a>
-		    </code><br>→ TTT-Servercontent DL (Link)
+		            </code><br>→ TTT-Servercontent DL (Link)
                 </small>
             </p>
-
         </div>
     </div>
     <div style="position: absolute;bottom: 0px;left: 20px;font-size: 12px;min-width: 260px;" class="well well-sm">
