@@ -18,6 +18,38 @@ class User implements JsonSerializable {
     }
 }
 
+function update_user_data($user_data_file, $current_user, $authors) {
+    $user_data_json = json_decode(file_get_contents($user_data_file), true);
+    
+    // update song selection for current user
+    $existing_user = false;
+    foreach ($user_data_json as &$user) {
+        if ($user['steamid'] == $current_user->steamid) {
+            $user["song_number"] = $user["song_number"] % count($authors) + 1;
+            $current_user->song_number = $user["song_number"];
+            $existing_user = true;
+        }
+    }
+
+    // add new user if user not in database
+    if(!$existing_user) {
+        array_push($user_data_json, $current_user);
+    }
+
+    // write json file
+    $user_data = fopen($user_data_file,"w");
+    fwrite($user_data, json_encode($user_data_json));
+    fclose($user_data);
+}
+
+function create_user_data($user_data_file, $current_user) {
+    $user_data_json = array();
+    array_push($user_data_json, $current_user);
+    $user_data = fopen($user_data_file,"w");
+    fwrite($user_data, json_encode($user_data_json));
+    fclose($user_data);
+}
+
 // --------------------------------------------------------------------------------
 
 // SITE CORE
@@ -67,41 +99,11 @@ if (isset($_GET['steamid'])) {
         $avatar = $arr['response']['players'][0]['avatar'];
 }
 
-function update_user_data($user_data_file, $current_user, $authors) {
-    global $user_data_file, $current_user, $authors;
-    
-    $user_data_json = json_decode(file_get_contents($user_data_file), true);
-    
-    // update song selection for current user
-    $existing_user = false;
-    foreach ($user_data_json as &$user) {
-        if ($user['steamid'] == $current_user->steamid) {
-            $user["song_number"] = $user["song_number"] % count($authors) + 1;
-            $current_user->song_number = $user["song_number"];
-            $existing_user = true;
-        }
-    }
-
-    // add new user if user not in database
-    if(!$existing_user) {
-        array_push($user_data_json, $current_user);
-    }
-
-    // write json file
-    $user_data = fopen($user_data_file,"w");
-    fwrite($user_data, json_encode($user_data_json));
-    fclose($user_data);
-}
-
 // update user data or create new json file
 if (file_exists($user_data_file)) {
-    update_user_data();
+    update_user_data($user_data_file, $current_user, $authors);
 } else {
-    $user_data_json = array();
-    array_push($user_data_json, $current_user);
-    $user_data = fopen($user_data_file,"w");
-    fwrite($user_data, json_encode($user_data_json));
-    fclose($user_data);
+    create_user_data($user_data_file, $current_user);
 }
 // ============================================================================
 ?>
