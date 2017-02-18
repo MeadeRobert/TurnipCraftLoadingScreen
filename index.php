@@ -14,7 +14,7 @@ class User implements JsonSerializable {
     }
 
     public function jsonSerialize() {
-        return ['steamid' => $this->steamid, 'song_number' => $this->song_number];
+        return [['steamid' => $this->steamid, 'song_number' => $this->song_number]];
     }
 }
 
@@ -67,27 +67,37 @@ if (isset($_GET['steamid'])) {
         $avatar = $arr['response']['players'][0]['avatar'];
 }
 
-// load from stored data or create new json entry
-if(file_exists($user_data_file)) {
+function update_user_data($user_data_file, $current_user, $authors) {
+    
     $user_data_json = json_decode(file_get_contents($user_data_file), true);
-
+   
     // update song selection for current user
     $existing_user = false;
     foreach ($user_data_json as &$user) {
-        if ($user['steamid'] == $current_user->steamid) {
+        echo var_dump($user);
+        if ($user['steamid'] === $current_user->steamid) {
             $user["song_number"] = $user["song_number"] % count($authors) + 1;
             $current_user->song_number = $user["song_number"];
             $existing_user = true;
         }
     }
+    echo var_dump($current_user);
+
     // add new user if user not in database
-    if(!$existing_user)
+    if(!$existing_user) {
+        echo "adding new user";
         array_push($user_data_json, $current_user);
+    }
 
     // write json file
     $user_data = fopen($user_data_file,"w");
     fwrite($user_data, json_encode($user_data_json));
-    fclose($user_data);    
+    fclose($user_data);
+}
+
+// load from stored data or create new json entry
+if(file_exists($user_data_file)) {
+    update_user_data($user_data_file, $current_user, $authors);
 } else {
     // create new json file for current user
     $user_data = fopen($user_data_file,"w");
@@ -117,7 +127,10 @@ if(file_exists($user_data_file)) {
     </audio>
     <script>
     var audio = document.getElementById("player");
-audio.addEventListener("ended", function() { audio.src = "music/1.ogg"; audio.play(); });
+    audio.addEventListener("ended", function() {
+        audio.src = "music/1.ogg";
+        audio.play();
+    });
     </script>
     <div class="container">
         <div class="jumbotron" style="margin-top: 50px;">
@@ -135,7 +148,7 @@ audio.addEventListener("ended", function() { audio.src = "music/1.ogg"; audio.pl
                         <li>No Random Killing; However, Traitors Can Gift Innocents Weapons on Community Pool Revamped to Join Their Force.</li>
                         <li>No Ghosting!</li>
                         <li>Only English (Taylor) or American Allowed.</li>
-                                                   <li> Server Management Team: techdude154, R. </li>
+                        <li> Server Management Team: techdude154, R. </li>
                     </ul>
                     All used Workshop items can be found here:
                     <br>
