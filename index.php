@@ -65,7 +65,15 @@ $authors = array(
     2 => 'Blood-C OST - Cafe Guimauve',
     3 => 'You Reposted in the Wrong TTT Server',
     4 => 'Pink Panther Theme Song',
-    5 => 'Foster The People - Pumped up Kicks'
+    5 => 'Foster The People - Pumped up Kicks',
+    6 => 'Gwyn, Lord of Cinder - Dark Souls Soundtrack',
+    7 => 'Golden Sky - God is an Astronaut',
+    8 => 'Revived Power - Shadow of the Colossus Soundtrack',
+    9 => 'Running in the \'90s (Sytricka Vaporwave Remix)',
+    10 => 'Lone Digger - Caravan Palace',
+    11 => 'Deemo-Peach Lady',
+    12 => 'Unlike Pluto - No Scrubs ft. Joanna Jones (Cover)',
+    13 => 'What we Do Here is Go Back - Otis McDonald'
 );
 $pictures = array(1,2,3);
 // ------------------------------------------------
