@@ -156,7 +156,7 @@ if (file_exists($user_data_file)) {
                         <li>No Random Killing; However, Traitors May Gift Innocents Weapons to Join Their Force on Community Pool Revamped.</li>
                         <li>No Ghosting!</li>
                         <li>Only English (Taylor) or American Allowed.</li>
-                        <li>Server Management Team: techdude154, R.</li>
+                        <li>Server Management Team: techdude154, rjm27trekkie, omnicoder32, seahacking</li>
                     </ul>
                     All Used Workshop Items Can be Found Here:
                     <br>
